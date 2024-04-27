@@ -35,7 +35,7 @@ const main = async () => {
   });
 
   // Our routes
-  app.use("/", router)
+  app.use("/", router);
 
   // this middleware will manage errors (the catch part of all routes)
   app.use((err, req, res, next) => {
@@ -57,4 +57,6 @@ const main = async () => {
   app.listen(PORT, () => {
     console.log(`app levantado en el puerto ${PORT}`);
   });
-}
+};
+
+main();
