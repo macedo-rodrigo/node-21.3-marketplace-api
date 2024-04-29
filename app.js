@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors"); // middleware library for connection
 
+// routes
+const { userRouter } = require("./routes/user.routes.js");
+
 const main = async () => {
   // database connection
   const { connect } = require("./db.js"); // the function we exported on db.js
@@ -20,8 +23,11 @@ const main = async () => {
   // middlewares
   app.use((req, res, next) => {
     // this one counts for all requests (as there is no route applied)
-    const date = new Date();
-    console.log(`A REQUEST WAS MADE! TYPE: ${req.method}, URl ${req.originalUrl}, DATE: ${date}`);
+    console.log(`
+    ****************************************************************
+    A REQUEST WAS MADE! TYPE: ${req.method}, URl: ${req.originalUrl}
+    ***************************************************************
+    `);
     next(); // so the app can continue running
   });
 
@@ -35,6 +41,7 @@ const main = async () => {
   });
 
   // Our routes
+  app.use("/user", userRouter);
   app.use("/", router);
 
   // this middleware will manage errors (the catch part of all routes)
