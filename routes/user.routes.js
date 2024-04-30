@@ -34,4 +34,13 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.post("/register", async (req, res, next) => {
+  const fullname = req.body.firstName;
+  const userEmail = req.body.email;
+
+  const userExistsInDb = new User()
+  userExistsInDb.create(firstName, lastName, email, password)
+
+})
+
 module.exports = { userRouter: router };

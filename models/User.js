@@ -59,5 +59,12 @@ userSchema.pre("save", async function (next) {
   }
 });
 
+userSchema.add("create", async (firstName, lastName, email, password, phone) => {
+  const user = { firstName, lastName, email, password, phone };
+  const userCreated = userSchema.add(user);
+  return userCreated;
+});
+
+
 const User = mongoose.model("User", userSchema);
 module.exports = { User };
