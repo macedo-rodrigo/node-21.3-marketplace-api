@@ -35,12 +35,22 @@ router.get("/", async (req, res, next) => {
 });
 
 router.post("/register", async (req, res, next) => {
-  const fullname = req.body.firstName;
-  const userEmail = req.body.email;
+  try {
+    // request data
+    const email = req.body.email;
+    const emailExists = await User.findOne({ email });
 
-  const userExistsInDb = new User()
-  userExistsInDb.create(firstName, lastName, email, password)
-
-})
+    if (!emailExists) {
+      const user = new User(req.body);
+      const newUser = await user.save();
+      return res.status(201).json(newUser).send("The user has been registered!");
+    } else {
+      console.log("Ya existe un user con este correo! Prueba con otro!");
+      res.status(401).send(`The email ${emailExists} already existis!`);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = { userRouter: router };
