@@ -1,4 +1,6 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
+const { generateToken } = require("../utils/token.js");
 
 // in order to show data throught a route, I need a model
 const { User } = require("../models/User");
@@ -47,6 +49,37 @@ router.post("/register", async (req, res, next) => {
     } else {
       console.log("Ya existe un user con este correo! Prueba con otro!");
       res.status(401).send(`The email ${emailExists} already existis!`);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// for the login, I need a POST request in order to validate if both email and password provided are corrects
+router.post("/login", async (req, res, next) => {
+  console.log("entrada a la ruta");
+  const { email, password } = req.body;
+  try {
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and Password fields must be fullfiled" });
+    }
+    // mais uma vez, localizamos o modelo correspondente
+    const user = await User.findOne({ email }).select("+password"); // as password is a encrypted information, we have to call it using select function
+    if (!user) {
+      return res.status(401).json({ error: "credentials are not valid" });
+    }
+
+    // now, we check if the password is correct
+    const match = await bcrypt.compare(password, user.password);
+    if (match) {
+      // We remove password from the answer
+      const userWithoutPass = user.toObject();
+      delete userWithoutPass.password;
+
+      // We generate JWT tokens
+      const jwtToken = generateToken(user._id, user.email);
+
+      return res.status(200).json({ token: jwtToken });
     }
   } catch (error) {
     next(error);
