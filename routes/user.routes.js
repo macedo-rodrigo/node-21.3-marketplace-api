@@ -65,6 +65,7 @@ router.post("/login", async (req, res, next) => {
     }
     // mais uma vez, localizamos o modelo correspondente
     const user = await User.findOne({ email }).select("+password"); // as password is a encrypted information, we have to call it using select function
+    console.log("se ha encontrado el usuario: ", user);
     if (!user) {
       return res.status(401).json({ error: "credentials are not valid" });
     }
@@ -80,6 +81,8 @@ router.post("/login", async (req, res, next) => {
       const jwtToken = generateToken(user._id, user.email);
 
       return res.status(200).json({ token: jwtToken });
+    } else {
+      return res.status(401).json({ error: "Oops! The credentials are not valid" });
     }
   } catch (error) {
     next(error);
